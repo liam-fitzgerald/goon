@@ -19,29 +19,39 @@
   ==
 ++   items  `(list @t)`~['foo' 'bar' 'baz']
 ++  give-blit
-  |=  [ses=@ta blit=dill-blit:dill]
+  |=  [ses=@ta =blit:dill]
   ^-  card
-  =/  =cage  dill-blit+!>(blit)
+  =/  =cage  dill-blit+!>(`blit:dill`[%mor ~[hop/0 clr/~ blit]])
   [%give %fact ~[/dill/[ses]] cage]
 ++  get-value
   |=  ls=(list attr:goon)
   ^-  (unit @t)
   =/  val  ~(value has:goon ls)
-  ?^  val
+  =/  led  ~(lede has:goon ls)
+  ?+    [val led]  ~
+  ::
+      [^ ^]
+    ?>  &(?=(^ led) ?=(^ val))
+    `(crip "{(trip u.led)}: {(trip (scod:goon u.val))}")
+  ::
+      [~ ^]   led
+  ::
+      [^ ~]   
+    ?>  ?=(^ val)
     `(scod:goon u.val)
-  ~(lede has:goon ls)
+  ==
 ::
 ++  draw-children
   =|  nex=(list goad:goon)
   =|  =spot
   =|  idx=@ud
+  =|  curr-wid=@ud
   =|  path-idx=(list @ud)
-  =/  zo  (zo-apex:zo [[0 0] [120 40]])
-  |=  [ses=@ta =path children=(list goad:goon)]
-  ^-  card
+  |=  [ses=@ta =path children=(list goad:goon) scop=size]
+  =/  zo  (zo-apex:zo [[0 status-height] [w.scop (sub h.scop status-height)]])
+  |-  
+  ^-  blit:dill
   =*  goad  i.children
-  ~&  path/path
-  ~&  children/children
   =/  is-highlighted=?
     ?&  ?=(^ path)
         ?=(^ children)
@@ -49,15 +59,18 @@
     ==
   =?  nex  ?&(?=(^ children) is-highlighted)
     r.i.children
-  ~&  nex/nex
   ?~  children
-    ~&  %fin-children
-    ?~  nex  (give-blit ses zo-abet:zo)
-    $(children nex, nex ~, path ?~(path ~ t.path), spot [(add x.spot 30) 0])
-  ~&  goad/p.goad
+    ?~  nex  zo-abet:zo
+    %=  $
+      children  nex
+      nex       ~
+      path      ?~(path ~ t.path)
+      spot      [:(add 2 x.spot curr-wid) 0]
+      curr-wid  0
+    ==
   ?~  val=(get-value q.goad)
     $(children t.children)
-  ~&  val/u.val
+  =.  curr-wid  (max curr-wid (met 3 u.val))
   =.  zo  
     ?.  is-highlighted 
       (zo-cord:zo spot u.val)
@@ -65,15 +78,17 @@
     (zo-stub:zo spot ~[[stye (tuba (trip u.val))]])
   $(children t.children, y.spot +(y.spot))
 ++  draw
-  |=  [ses=@ta =path]
+  |=  [ses=@ta =path scop=size]
   ^-  card
-  (draw-children ses path ~[goad:goon-test])
+  =/  main=blit:dill  (draw-children ses path ~[goad:goon-test] scop)
+  =/  stat=blit:dill  (draw-statusline path scop)
+  (give-blit ses mor/~[main stat])
 ++  mov
   |=  [children=(list goad:goon) =path up=?]
-  |^  ^+  path
+  ^+  path
   ?+   path
   ::  default
-    [i.path $(children (descend children i.path), path t.path)]
+    [i.path $(children r:(descend children i.path), path t.path)]
   ::
       ~  !!
   ::
@@ -81,62 +96,102 @@
     :_  ~
     (side children i.path up)
   ==
-  ++  find-index
-    =|  idx=@ud
-    |=  [children=(list goad:goon) seg=knot]
-    ^-  (unit @ud)
-    ?~  children  ~
-    ?:  =((scod:goon p.i.children) seg)
-      `idx
-    $(children t.children, idx +(idx))
-  ++  cycle-idx
-    |=  [idx=@ud up=? children=(list goad:goon)]
-    ^-  @ud
-    =/  len  (lent children)
-    ?:  up
-      %-  dec
-      ?:  =(0 idx)
-         len
-      idx
-    ?:  =((dec len) idx)
-      0
-    .+(idx)
-  ++  side
-    |=  [children=(list goad:goon) seg=knot up=?]
-    =/  idx=@ud  (need (find-index children seg))
-    =.  idx  (cycle-idx idx up children)
-    (scod:goon p:(snag idx children))
-  ++  descend
-    |=  [children=(list goad:goon) seg=knot]
-    ~&  children
-    ^-  (list goad:goon)
-    ?~  children  !!
-    ?:  =((scod:goon p.i.children) seg)
-      r.i.children
-    $(children t.children)
-  --
+++  find-index
+  =|  idx=@ud
+  |=  [children=(list goad:goon) seg=knot]
+  ^-  (unit @ud)
+  ?~  children  ~
+  ?:  =((scod:goon p.i.children) seg)
+    `idx
+  $(children t.children, idx +(idx))
+++  cycle-idx
+  |=  [idx=@ud up=? children=(list goad:goon)]
+  ^-  @ud
+  =/  len  (lent children)
+  ?:  up
+    %-  dec
+    ?:  =(0 idx)
+       len
+    idx
+  ?:  =((dec len) idx)
+    0
+  .+(idx)
+++  side
+  |=  [children=(list goad:goon) seg=knot up=?]
+  =/  idx=@ud  (need (find-index children seg))
+  =.  idx  (cycle-idx idx up children)
+  (scod:goon p:(snag idx children))
+++  descend
+  |=  [children=(list goad:goon) seg=knot]
+  ^-  goad:goon
+  ?~  children  !!
+  ?:  =((scod:goon p.i.children) seg)
+    i.children
+  $(children t.children)
+::
 ++  spelunk
   |=  [children=(list goad:goon) =path]
-  |^  ^+  path
+  ^+  path
   ?~   path
-    ?~  children  !!
-  ::  default
-    [i.path $(children (descend children i.path), path t.path)]
-  ::
-      ~  !!
-  ::
-      [@ ~]  
-    :_  ~
-    (side children i.path up)
-  ==
+    ?~  children  ~|(%killed-spelunking !!)
+    /(scod:goon p.i.children)
+  [i.path $(children r:(descend children i.path), path t.path)]
+++  ascend
+  |=  =path
+  ^+  path
+  ?:  ?=(?(~ [@ ~]) path)
+    ~
+  [i.path $(path t.path)]
+++  get-goad
+  |=  [ls=(list goad:goon) =path]
+  ?~  ls    !!
+  ?~  path  !!
+  =/  down  (descend ls i.path)
+  ?~  t.path
+     down
+  $(ls r.down, path t.path)
+::
 ++  input
   |=  [=path =belt:dill]
   ^+  path
+  ~&  belt
+  =-  ~&(- -)
   ?+  belt  path
     %j  (mov ~[goad:goon-test] path |)
     %k  (mov ~[goad:goon-test] path &)
     %l  (spelunk ~[goad:goon-test] path)
+    %h  (ascend path)
   ==
+++  status-height  3
+++  draw-statusline
+  |=  [=path scop=size]
+  ^-  blit:dill
+  =/  =goad:goon  
+    (get-goad ~[goad:goon-test] path)
+  =/  zo  (zo-apex:zo [[0 0] [w.scop status-height]])
+  =/  ifo  ~(info has:goon q.goad)
+  =/  acts  ~(act has:goon q.goad)
+  =.  zo  
+    ?^  ifo
+      (zo-cord:zo [0 0] u.ifo)
+    (zo-cord:zo [0 0] (crip (reap (dec w.scop) ' ')))
+  =.  zo
+    =/  =spot  [0 1]
+    =.  zo
+      (zo-cord:zo spot 'actions: ')
+    =.  x.spot  (add x.spot 10)
+    |-  
+    ?~  acts  zo
+    =/  info  (cat 3 info.q.i.acts ' | ')
+    =.  zo
+      (zo-cord:zo spot info)
+    =.  x.spot  (add x.spot (met 3 info))
+    $(acts t.acts)
+
+
+  =.  zo
+    (zo-cord:zo [0 (dec status-height)] (crip (reap (dec w.scop) '-')))
+  zo-abet:zo
 --
 =|  state-0
 =*  state  -
@@ -152,31 +207,42 @@
 ++  on-load
   |=  =vase
   =+  !<(old=state-0 vase)
+  =.  path.old  def-path
   `this(state old)
 ++  on-poke
   |=  [=mark =vase]
-  ^-  (quip card _this)
-  ?.  =(%dill-poke mark)  ~|(bad-mark/mark !!)
-  =+  !<([sesh=@ta belt=dill-belt:dill] vase)
-  =.  ses  sesh
-  ?:  ?=([%yow *] belt)
-    ~&  %todo-connect-belt
-    :_  this
-    ~[(draw ses /pals/list/(scot %p ~rovnys-ricfer)/tags)]
+  |^  ^-  (quip card _this)
+  ?+  mark  ~|(bad-mark/mark !!)
+    %dill-poke  (on-dill-poke !<([@ta dill-belt:dill] vase))
+    %noun       (on-noun q.vase)
+  ==
+  ++  on-dill-poke
+    |=  [sesh=@ta belt=dill-belt:dill]
+    =.  ses  sesh
+    ?:  ?=([%yow *] belt)
+      ~&  %todo-connect-belt
+      :_  this
+      ~[(draw ses path scope)]
 
-  ?:  ?=([%cru *] belt)
-    ~&  %todo-error-belt
-    `this
-  ?:  ?=([%hey ~] belt)
-    ~&  %todo-refresh-belt
-    `this
-  ?:  ?=([%rez *] belt)
-    =.  scope  [(div (sub p.belt 2) 2) (sub q.belt 4)]
-    ~&  %todo-resize-belt
-    `this
-  =.  path  (input path belt)
-  :_  this
-  ~[(draw ses path)]
+    ?:  ?=([%cru *] belt)
+      ~&  %todo-error-belt
+      `this
+    ?:  ?=([%hey ~] belt)
+      ~&  %todo-refresh-belt
+      `this
+    ?:  ?=([%rez *] belt)
+      =.  scope  [p q]:belt
+      ~&  %todo-resize-belt
+      `this
+    =.  path  (input path belt)
+    :_  this
+    ~[(draw ses path scope)]
+  ++  on-noun
+    |=  non=*
+    ?+  non  ~|(bad-noun/non !!)
+      %reset  `this(path def-path)
+    ==
+  --
 ++  on-watch  
   |=  =(pole knot)
   ^-  (quip card _this)
@@ -184,7 +250,7 @@
     (on-watch:def pole)
   =.  ses  ses.pole
   :_  this
-  ~[(draw ses path)]
+  ~[(draw ses path scope)]
 ++  on-peek  on-peek:def
 ++  on-agent  on-agent:def
 ++  on-arvo   on-arvo:def

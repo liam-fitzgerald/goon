@@ -4,6 +4,7 @@
   |=  [name=term count=@ud value=?]
   :+  name
     :~  lede/(crip "{(trip name)}: {(scow %ud count)}")
+        value/f/value
     ==
   ~
 ++  pals
@@ -15,19 +16,24 @@
     :~  value/p/patp
     ==
   :~  :+  %status
-        :~  key/status
+        :~  lede/'Status'
             value/tas/status
         ==
       ~
     ::
       :+  %tags
         :~  lede/'tags'
+            :-  %act
+            :~  [%add 'Add' 'Add a tag to this ship']
+            ==
         ==
       %+  turn  ~(tap in tags)
       |=  tag=term
       :+  tag
-        :~  key/tag
-            value/tas/tag
+        :~  value/tas/tag
+            :-  %act
+            :~  [%del 'delete' 'Delete this tag']
+            ==
         ==
       ~
   ==

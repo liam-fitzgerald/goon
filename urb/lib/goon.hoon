@@ -3,7 +3,7 @@
 +$  info  @t
 +$  lede  @t
 +$  interact
-  [=info =lede =path]
+  [=info =lede]
 +$  act
   (pair term interact)
 +$  iota  $@(@t (pair aura @))
@@ -91,6 +91,22 @@
     ?:  ?=(%lede -.i.attrs)
       `p.i.attrs
     $(attrs t.attrs)
+  ++  act
+    |-  ^-  (list ^act)
+    ?~  attrs
+      ~
+    ?:  ?=(%act -.i.attrs)
+      p.i.attrs
+    $(attrs t.attrs)
+  ::
+  ++  info
+    |-  ^-  (unit @t)
+    ?~  attrs
+      ~
+    ?:  ?=(%info -.i.attrs)
+      `p.i.attrs
+    $(attrs t.attrs)
+
   ++  value
     |-  ^-  (unit iota)
     ?~  attrs
