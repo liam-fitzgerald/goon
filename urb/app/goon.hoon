@@ -202,6 +202,7 @@
     def   ~(. (default-agent this %|) bowl)
 ++  on-init
   =.  path  def-path
+  =.  scope  [80 40]
   `this
 ++  on-save  !>(state)
 ++  on-load

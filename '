@@ -1,4 +1,4 @@
-/+  goon, *etui, goon-lib, default-agent
+/+  goon, *etui, goon-lib
 |%
 +$  card  card:agent:gall
 +$  sack
@@ -17,6 +17,7 @@
 =|  state-0
 =*  state  -
 =>
+  ^-  agent:gall
   |_  [=bowl:gall cards=(list card)]
   ++  abet
     [(flop cards) state]
@@ -29,7 +30,7 @@
     |=  ses=@ta
     =/  =sack  [%pals /pals [80 40]]
     =.  sacks  (~(put by sacks) ses sack)
-    sa-abet:sa-init:(sa-abed:sa-core ses)
+    sa-abet:(sa-init:(sa-abed:sa-core ses)
   ++  sa-core
     |_  [id=@ta =sack]
     ++  sa-abet
@@ -117,7 +118,6 @@
       $(children t.children, y.spot +(y.spot))
     --
   --
-^-  agent:gall
 |_  =bowl:gall
 +*  this  .
     def   ~(. (default-agent this %|) bowl)
