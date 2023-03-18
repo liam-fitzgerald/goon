@@ -5,6 +5,8 @@
   ^-  (unit @t)
   =/  val  ~(value has:goon ls)
   =/  led  ~(lede has:goon ls)
+  =/  edi  ~(edit has:goon ls)
+  =-  (bind - |=(=@t (cat 3 t ?:(edi '✏️' ''))))
   ?+    [val led]  ~
   ::
       [^ ^]
@@ -90,11 +92,11 @@
   ::
   ++  sink
     |=  =path
-    ^+  path
-    ?~   path
-      ?~  thugs  ~|(%killed-spelunking !!)
-      /(scod:goon p.i.thugs)
-    =.  thugs  r:(fall (dive i.path) *goad:goon)
-    [i.path $(path t.path)]
+    ^-  (unit _path)
+    ?~  god=(get path)
+      ~
+    ?~  r.u.god
+      ~
+    `(snoc path (scod:goon p.i.r.u.god))
   --
 --

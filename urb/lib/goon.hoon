@@ -106,7 +106,15 @@
     ?:  ?=(%info -.i.attrs)
       `p.i.attrs
     $(attrs t.attrs)
-
+  ::
+  ++  edit
+    |-  ^-  ?
+    ?~  attrs
+      |
+    ?:  ?=(%edit -.i.attrs)
+      &
+    $(attrs t.attrs)
+  ::
   ++  value
     |-  ^-  (unit iota)
     ?~  attrs

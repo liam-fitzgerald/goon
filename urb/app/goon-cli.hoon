@@ -1,10 +1,20 @@
 /+  goon, *etui, goon-lib, default-agent
 |%
 +$  card  card:agent:gall
+++  slav
+  |=  [p=@ta q=@t]
+  ?.  =(p %f)
+    (slav p q)
+  ?:  =('&' q)
+    &
+  ?:  =('|' q)
+    |
+  !!
 +$  sack
   $:  =dude:gall
       =path
       scope=_[w=80 h=40]
+      editing=(unit cord)
   ==
 +$  state-0
   $:  sacks=(map @ta sack)
@@ -27,7 +37,7 @@
     sa-abet:(sa-belt:(sa-abed:sa-core ses) belt)
   ++  dill-watch
     |=  ses=@ta
-    =/  =sack  [%pals /pals [80 40]]
+    =/  =sack  [%pals /pals [80 40] ~]
     =.  sacks  (~(put by sacks) ses sack)
     sa-abet:sa-init:(sa-abed:sa-core ses)
   ++  sa-core
@@ -61,25 +71,100 @@
       sa-core(scope.sack size)
     ++  sa-geo
       |%
-      ++  status  3
+      ++  status  4
       --
+    ::
+    ++  sa-edit-belt
+      |=  [input=@t belt=dill-belt:dill]
+      ?@  belt
+        =/  new-value=cord
+          (crip (tufa (snoc (tuba (trip input)) belt)))
+        =.  editing.sack  `new-value
+        sa-draw
+      ~&  funny-belt/belt
+      ?:  ?=([%ret ~] belt)
+        (sa-finalize-edit input)
+      sa-core
+    ::
+    ++  sa-finalize-edit
+      |=  input=@t
+      =/  =goad:goon  (need (get:sa-thugs path.sack))
+      =/  new-val=iota:goon
+        =/  val  (need ~(value has:goon q.goad))
+        ?@  val  input
+        [p.val (slav p.val input)]
+      =.  editing.sack  ~
+      sa-draw:(sa-poke-agent new-val)
+    ::
+    ++  sa-poke-agent
+      |=  =iota:goon
+      ~&  poke-agent/[path.sack iota]
+      sa-core
+    ::
+    ++  sa-belt-ret
+      =/  =goad:goon  (need (get:sa-thugs path.sack))
+      ?>  ~(edit has:goon q.goad)
+      =.  editing.sack
+        `*@t
+      sa-draw
     ::
     ++  sa-user-belt
       |=  belt=dill-belt:dill
-      =-  sa-draw(path.sack -)
-      ?+  belt  path.sack
-        %j  (move:sa-thugs path.sack |)
-        %k  (move:sa-thugs path.sack &)
+      ?^  editing.sack 
+        (sa-edit-belt u.editing.sack belt)
+      ?:  =([%ret ~] belt)
+        sa-belt-ret
+      =;  pax=(unit path)
+        ?^  pax
+          sa-draw(path.sack u.pax)
+        (sa-blit bel/~)
+      ?+  belt  `path.sack
+        %j  `(move:sa-thugs path.sack |)
+        %k  `(move:sa-thugs path.sack &)
         %l  (sink:sa-thugs path.sack)
-        %h  (soar:sa-thugs path.sack)
+        %h  `(soar:sa-thugs path.sack)
       ==
-    ++  sa-draw
-      =/  =blit:dill  sa-draw-main
-      =/  =cage  dill-blit+!>(`blit:dill`[%mor ~[hop/0 clr/~ blit]])
+    ++  sa-blit
+      |=  =blit:dill
+      =/  =cage  dill-blit+!>(blit)
       =/  card   [%give %fact ~[/dill/[id]] cage]
       =.  main  (emit card)
       sa-core
-    ++  sa-draw-main
+    ::
+    ++  sa-draw
+      =/  tree=blit:dill  sa-draw-tree
+      =/  stat=blit:dill  sa-draw-status
+      (sa-blit [%mor ~[hop/0 clr/~ tree stat]])
+    ++  sa-draw-status
+      ^-  blit:dill
+      ?~  god=(get:sa-thugs path.sack)
+        mor/~
+      =/  zo   (zo-apex:zo [[0 0] [w.scope.sack status:sa-geo]])
+      =/  ifo  ~(info has:goon q.u.god)
+      =/  acts  ~(act has:goon q.u.god)
+      =/  edit  ~(edit has:goon q.u.god)
+      =.  zo  
+        ?^  ifo
+          (zo-cord:zo [0 0] u.ifo)
+        (zo-cord:zo [0 0] (crip (reap (dec w.scope.sack) ' ')))
+      =.  zo
+        =/  =spot  [0 1]
+        =.  zo
+          (zo-cord:zo spot 'actions: ')
+        =.  x.spot  (add x.spot 10)
+        |-  
+        ?~  acts  zo
+        =/  info  (cat 3 info.q.i.acts ' | ')
+        =.  zo
+          (zo-cord:zo spot info)
+        =.  x.spot  (add x.spot (met 3 info))
+        $(acts t.acts)
+      =?  zo  ?=(^ editing.sack)
+        (zo-cord:zo [0 2] (cat 3 'new value: ' u.editing.sack))
+      =.  zo
+        (zo-cord:zo [0 (dec status:sa-geo)] (crip (reap (dec w.scope.sack) '-')))
+      zo-abet:zo
+    ++  sa-draw-tree
       =|  nex=(list goad:goon)
       =|  =spot
       =|  idx=@ud
