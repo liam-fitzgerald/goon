@@ -6,7 +6,11 @@
   =/  val  ~(value has:goon ls)
   =/  led  ~(lede has:goon ls)
   =/  edi  ~(edit has:goon ls)
-  =-  (bind - |=(=@t (cat 3 t ?:(edi '✏️' ''))))
+  =/  add  ~(add has:goon ls)
+  =-  
+    %+  bind  - 
+    |=  =@t
+    (cat 3 t ?:(edi '✏️' ?:(add '+' '')))
   ?+    [val led]  ~
   ::
       [^ ^]

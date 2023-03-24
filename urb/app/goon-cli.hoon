@@ -1,5 +1,11 @@
 /+  goon, *etui, goon-lib, default-agent
 |%
+++  drop-r
+  |*  =(list)
+  =.  list  (flop list)
+  ?~  list  ~
+  (flop t.list)
+::
 ++  snug
   |*  [a=@ b=(list)]
   ^-  (unit _?>(?=(^ b) i.b))
@@ -18,7 +24,7 @@
 ++  slav
   |=  [p=@ta q=@t]
   ?.  =(p %f)
-    (slav p q)
+    (^slav p q)
   ?:  =('&' q)
     &
   ?:  =('|' q)
@@ -29,6 +35,7 @@
       =path
       scope=_[w=80 h=40]
       editing=(unit cord)
+      curr=(list goad:goon)
   ==
 +$  state-0
   $:  sacks=(map @ta sack)
@@ -51,9 +58,17 @@
     sa-abet:(sa-belt:(sa-abed:sa-core ses) belt)
   ++  dill-watch
     |=  ses=@ta
-    =/  =sack  [%pals /pals [80 40] ~]
+    =/  =sack  [%pals /pals [80 40] ~ ~]
     =.  sacks  (~(put by sacks) ses sack)
     sa-abet:sa-init:(sa-abed:sa-core ses)
+  ::
+  ++  on-agent
+    |=  [=(pole knot) =sign:agent:gall]
+    ^+  main
+    ?+    pole  ~|(weird-agent-take/pole !!)
+        [%sack ses=@ t=*]
+      sa-abet:(sa-agent-sign:(sa-abed:sa-core ses.pole) t.pole sign)
+    ==
   ++  sa-core
     |_  [id=@ta =sack]
     ++  sa-abet
@@ -62,14 +77,54 @@
       |=  i=@ta
       sa-core(id i, sack (~(got by sacks) i))
     ++  sa-core  .
-    ++  sa-peek
+    ++  sa-fill
+      =-  sa-core(curr.sack ~[-])
       .^  goad:goon
           %gx 
           /(scot %p our.bowl)/[dude.sack]/(scot %da now.bowl)/goon/noun
       ==
-    ++  sa-thugs  ~(. thug:goon-lib ~[sa-peek])
+    ++  sa-thugs  ~(. thug:goon-lib curr.sack)
+    ++  sa-dock   [our.bowl dude.sack]
     ++  sa-init
-      sa-draw
+      sa-watch
+    ++  sa-area  `wire`/sack/[id]
+    ++  sa-watch
+      =.  main  (emit %pass (snoc sa-area %watch) %agent sa-dock %watch /goon)
+      sa-core
+    ::
+    ++  sa-stab
+      |=  =blade:goon
+      =/  =cage  goon-stab+!>(`stab:goon`[path.sack blade])
+      =/  =wire  (snoc sa-area %poke)
+      =.  main   (emit %pass wire %agent sa-dock %poke cage)
+      sa-core
+    ::  TODO: actually cleanup
+    ++  sa-cleanup
+      |=  =tang
+      %-  (slog leaf/"goon: unrecoverable error, cleaning up" tang)
+      sa-core
+    ::
+    ++  sa-agent-sign
+      |=  [=wire =sign:agent:gall]
+      ?+    wire  ~|(sa-bad-agent-sign/wire !!)
+          [%watch ~]
+        ?+    -.sign  ~|(sa-bad-watch-sign/-.sign !!)
+            %watch-ack
+          ?~  p.sign  sa-draw:sa-fill
+          (sa-cleanup leaf/"nacked /goon subscription" u.p.sign)
+        ::
+            %fact
+          ?>  =(%goon-redraw p.cage.sign)
+          sa-draw:sa-fill
+        ==
+      ::
+          [%poke ~]
+        ?>  ?=(%poke-ack -.sign)
+        ?^  p.sign
+          %-  (slog leaf/"nacked stab" u.p.sign)
+          sa-core
+        sa-draw:sa-fill
+      ==
     ++  sa-belt
       |=  belt=dill-belt:dill
       ^+  sa-core
@@ -95,6 +150,10 @@
           (crip (tufa (snoc (tuba (trip input)) belt)))
         =.  editing.sack  `new-value
         sa-draw
+      ?:  ?=([%bac ~] belt)
+        =.  editing.sack
+          `(crip (tufa (drop-r (tuba (trip input)))))
+        sa-draw
       ~&  funny-belt/belt
       ?:  ?=([%ret ~] belt)
         (sa-finalize-edit input)
@@ -107,17 +166,17 @@
         =/  val  (need ~(value has:goon q.goad))
         ?@  val  input
         [p.val (slav p.val input)]
+      =/  add=?  ~(add has:goon q.goad)
       =.  editing.sack  ~
-      sa-draw:(sa-poke-agent new-val)
+      sa-draw:(sa-stab ?:(add [%add new-val] [%edit new-val]))
     ::
     ++  sa-poke-agent
       |=  =iota:goon
-      ~&  poke-agent/[path.sack iota]
       sa-core
     ::
     ++  sa-belt-ret
       =/  =goad:goon  (need (get:sa-thugs path.sack))
-      ?>  ~(edit has:goon q.goad)
+      ?>  |(~(add has:goon q.goad) ~(edit has:goon q.goad))
       =.  editing.sack
         `*@t
       sa-draw
@@ -149,13 +208,9 @@
         ~|  atheist-path/path.sack  !! :: TODO: fix
       ?~  act=(snug (dec idx) ~(act has:goon q.u.god))
         sa-core
-      ~&  u.act
-      sa-core
-        
-     
-
-
-
+      ~&  act/q.u.act
+      (sa-stab %act p.u.act)
+    ::
     ++  sa-blit
       |=  =blit:dill
       =/  =cage  dill-blit+!>(blit)
@@ -204,7 +259,7 @@
       =|  idx=@ud
       =|  curr-wid=@ud
       =|  path-idx=(list @ud)
-      =/  children=(list goad:goon)  ~[sa-peek]
+      =/  children=(list goad:goon)  curr.sack
       =/  zo  (zo-apex:zo [[0 status:sa-geo] [w.scope.sack (sub h.scope.sack status:sa-geo)]])
       |-  
       ^-  blit:dill
@@ -229,6 +284,12 @@
         $(children t.children)
       =.  curr-wid  (max curr-wid (met 3 u.val))
       =.  zo  
+        ?:  ~(add has:goon q.goad)
+          =/  =stye  
+            :-  ?:(is-highlighted (silt %un ~) ~)
+            [~ [0xdd.dddd 0xdd.dddd 0xdd.dddd]]
+          (zo-stub:zo spot ~[[stye (tuba (trip u.val))]])
+          
         ?.  is-highlighted 
           (zo-cord:zo spot u.val)
         =/  =stye  [(silt %un ~) ~ ~]
@@ -276,7 +337,11 @@
   [cards this]
 ::
 ++  on-peek  on-peek:def
-++  on-agent  on-agent:def
+++  on-agent  
+  |=  [=wire =sign:agent:gall]
+  =^  cards  state
+    abet:(on-agent:main wire sign)
+  [cards this]
 ++  on-arvo   on-arvo:def
 ++  on-fail   on-fail:def
 ++  on-leave  on-leave:def
