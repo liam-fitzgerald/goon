@@ -1,6 +1,20 @@
 /+  goon, *etui, goon-lib, default-agent
 |%
+++  snug
+  |*  [a=@ b=(list)]
+  ^-  (unit _?>(?=(^ b) i.b))
+  ?~  b
+    ~
+  ?:  =(a 0)
+    `i.b
+  $(a (dec a), b t.b)
 +$  card  card:agent:gall
+++  is-ascii-num
+  |=  a=@
+  &((lte a 57) (gte a 49))
+++  from-ascii-num
+  |=  a=@
+  `@ud`(sub a 48)
 ++  slav
   |=  [p=@ta q=@t]
   ?.  =(p %f)
@@ -114,16 +128,34 @@
         (sa-edit-belt u.editing.sack belt)
       ?:  =([%ret ~] belt)
         sa-belt-ret
+      ?:  &(?=(@ belt) (is-ascii-num belt))
+        (sa-act-belt (from-ascii-num belt))
       =;  pax=(unit path)
         ?^  pax
           sa-draw(path.sack u.pax)
         (sa-blit bel/~)
+      ~&  belt/`*`belt
       ?+  belt  `path.sack
         %j  `(move:sa-thugs path.sack |)
         %k  `(move:sa-thugs path.sack &)
         %l  (sink:sa-thugs path.sack)
         %h  `(soar:sa-thugs path.sack)
       ==
+    ::
+    ++  sa-act-belt
+      |=  idx=@ud
+      ~&  sa-act-belt/idx
+      ?~  god=(get:sa-thugs path.sack)
+        ~|  atheist-path/path.sack  !! :: TODO: fix
+      ?~  act=(snug (dec idx) ~(act has:goon q.u.god))
+        sa-core
+      ~&  u.act
+      sa-core
+        
+     
+
+
+
     ++  sa-blit
       |=  =blit:dill
       =/  =cage  dill-blit+!>(blit)
@@ -152,13 +184,15 @@
         =.  zo
           (zo-cord:zo spot 'actions: ')
         =.  x.spot  (add x.spot 10)
+        =/  act-idx=@ud  1
         |-  
         ?~  acts  zo
-        =/  info  (cat 3 info.q.i.acts ' | ')
+        =/  info
+          (rap 3 '(' (crip "{(scow %ud act-idx)}") ') ' info.q.i.acts ' | ' ~)
         =.  zo
           (zo-cord:zo spot info)
         =.  x.spot  (add x.spot (met 3 info))
-        $(acts t.acts)
+        $(acts t.acts, act-idx +(act-idx))
       =?  zo  ?=(^ editing.sack)
         (zo-cord:zo [0 2] (cat 3 'new value: ' u.editing.sack))
       =.  zo
