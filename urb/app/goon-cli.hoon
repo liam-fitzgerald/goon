@@ -1,5 +1,15 @@
 /+  goon, *etui, goon-lib, default-agent
 |%
+++  inc-mod
+  |=  [x=@ud len=@ud]
+  ?:  =(+(x) len)
+    0
+  +(x)
+++  dec-mod
+  |=  [x=@ud len=@ud]
+  ?.  =(0 x)
+    (dec x)
+  (dec len)
 ++  drop-r
   |*  =(list)
   =.  list  (flop list)
@@ -37,8 +47,17 @@
       editing=(unit cord)
       curr=(list goad:goon)
   ==
+::
++$  sock
+  $:  sel=@ud
+      bros=(list dude:gall)
+      scope=_[w=80 h=40]
+       ~
+  ==
+::
 +$  state-0
   $:  sacks=(map @ta sack)
+      socks=(map @ta sock)
       ~
   ==
 +$  action
@@ -55,12 +74,17 @@
   ++  emit  |=(=card main(cards [card cards]))
   ++  dill-poke
     |=  [ses=@ta belt=dill-belt:dill]
-    sa-abet:(sa-belt:(sa-abed:sa-core ses) belt)
+    ?:  (~(has by sacks) ses)
+      ~&  %sack
+      sa-abet:(sa-belt:(sa-abed:sa-core ses) belt)
+    ~&  %sock
+    ~&  belt/belt
+    so-abet:(so-belt:(so-abed:so-core ses) belt)
   ++  dill-watch
     |=  ses=@ta
-    =/  =sack  [%pals /pals [80 40] ~ ~]
-    =.  sacks  (~(put by sacks) ses sack)
-    sa-abet:sa-init:(sa-abed:sa-core ses)
+    =/  =sock  [0 ~ [80 40] ~]
+    =.  socks  (~(put by socks) ses sock)
+    so-abet:so-init:(so-abed:so-core ses)
   ::
   ++  on-agent
     |=  [=(pole knot) =sign:agent:gall]
@@ -69,6 +93,81 @@
         [%sack ses=@ t=*]
       sa-abet:(sa-agent-sign:(sa-abed:sa-core ses.pole) t.pole sign)
     ==
+  ++  so-core
+    |_  [id=@ta =sock]
+    ++  so-abet
+      main(socks (~(put by socks) id sock))
+    ++  so-abed
+      |=  i=@ta
+      so-core(id i, sock (~(got by socks) i))
+    ++  so-core  .
+    ++  so-blit
+      |=  =blit:dill
+      =/  =cage  dill-blit+!>(blit)
+      =/  card   [%give %fact ~[/dill/[id]] cage]
+      =.  main  (emit card)
+      so-core
+    ++  so-bell
+      (so-blit bel/~)
+    ++  so-belt
+      |=  belt=dill-belt:dill
+      ^+  so-core
+      ~&  belt/belt
+      ?+  belt  so-bell
+        [%hey ~]  so-core
+        [%yow *]  so-draw
+        [%cru *]  ~&(%error so-core)
+        [%aro %u]  so-draw(sel.sock (dec-mod sel.sock (lent bros.sock)))
+        [%aro %d]  so-draw(sel.sock (inc-mod sel.sock (lent bros.sock)))
+        [%rez *]   so-core(scope.sock [p q]:belt)
+      ==
+    ::
+    ++  so-desks
+      ^-  (set desk)
+      =-  ~&(desks/- -)
+      =-  ~(key by -)
+      .^  (map desk *)
+        /gx/(scot %p our.bowl)/hood/(scot %da now.bowl)/kiln/pikes/noun
+      ==
+    ::
+    ++  so-update-bros
+      =-  so-core(bros.sock -)
+      ^-  (list dude:gall)
+      =-  ~&(dudes/- -)
+      %-  zing
+      %+  turn  ~(tap in so-desks)
+      |=  =desk
+      ^-  (list ^desk)
+      =-  (turn - head)
+      =-  ~(tap in -)
+      .^  (set [=dude:gall liv=?])
+        %ge
+        /(scot %p our.bowl)/[desk]/(scot %da now.bowl)
+      ==
+    ::
+    ++  so-init  
+      ~&  'foo'
+      ~&  desks/so-desks
+      =.  so-core
+        so-update-bros
+      so-draw
+    ++  so-draw
+      ^+  so-core
+      =/  ls=(list dude:gall)  :: todo: unstub
+        bros.sock
+      =/  zo   (zo-apex:zo [0 0] scope.sock)
+      =|  y=@ud
+      |-
+      ?~  ls
+        (so-blit zo-abet:zo)
+      =/  =stye
+        :_  [~ ~]
+        ?.  =(y sel.sock)
+          ~
+        (silt %un ~)
+      =.  zo  (zo-stub:zo [0 y] ~[[stye (tuba (trip i.ls))]])
+      $(y +(y), ls t.ls)
+    --
   ++  sa-core
     |_  [id=@ta =sack]
     ++  sa-abet
@@ -85,8 +184,7 @@
       ==
     ++  sa-thugs  ~(. thug:goon-lib curr.sack)
     ++  sa-dock   [our.bowl dude.sack]
-    ++  sa-init
-      sa-watch
+    ++  sa-init   sa-watch
     ++  sa-area  `wire`/sack/[id]
     ++  sa-watch
       =.  main  (emit %pass (snoc sa-area %watch) %agent sa-dock %watch /goon)

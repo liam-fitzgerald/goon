@@ -44,7 +44,7 @@ Self description is handled by the `%lede` and `%info` attributes, defined as th
 [%lede p=cord]
 [%info p=cord]
 ```
-A `%lede` is a short succint "label", or "title" for describing the what the node represents. An `%info` is a longer "description" elaborating precisely what the node represents. Note that this is not a way for to embed text *content* into nodes, rather a way to embed text *copy*. A rule of thumb for seperating these is that an experienced user should be able to hide all copy and still navigate the application with no difficulties.
+A `%lede` is a short succinct "label", or "title" for describing what the node represents. An `%info` is a longer "description" elaborating precisely what the node represents. Note that this is not a way to embed text *content* into nodes, rather a way to embed text *copy*. A rule of thumb for seperating these is that an experienced user should be able to hide all copy and still navigate the application with no difficulties.
 
 Output is handled exclusively with the `%value` attribute like so,
 ```hoon
